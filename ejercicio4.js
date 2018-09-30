@@ -1,11 +1,11 @@
 var http = require('http');
-var dispatcher = require('httpdispatcher');
+var HttpDispatcher = require('httpdispatcher');
+var dispatcher = new HttpDispatcher();
 
 const port = 8080;
 
 function handleRequest(request, response) {
     try {
-        console.log(request.url);
         dispatcher.dispatch(request, response);
     } catch (err) {
         console.log(err);
@@ -20,8 +20,11 @@ dispatcher.onGet("/", function (req, res) {
 });
 
 dispatcher.onGet("/hello", function (req, res) {
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end('Welcome homepage');
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    let obj = {
+        hello: 'Maria'
+    }
+    res.end(JSON.stringify(obj));
 });
 
 dispatcher.onError(function (req, res) {
