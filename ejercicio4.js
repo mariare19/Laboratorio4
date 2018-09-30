@@ -1,26 +1,17 @@
-var http = require('http');
-var HttpDispatcher = require('httpdispatcher');
-var dispatcher = new HttpDispatcher();
+var http = require('http')
+var finalhandler = require('finalhandler')
+var Router = require('router')
 
-var server = http.createServer(function (request, response) {
-    try {
-        dispatcher.dispatch(request, response);
-    } catch (err) {
-        console.log(err);
-    }
-});
+var router = new Router()
+var server = http.createServer(function onRequest(req, res) {
+    router(req, res, finalhandler(req, res))
+})
 
-dispatcher.onGet("/hello", function (req, res) {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    let obj = {
-        hello: 'Maria'
-    }
-    res.end(JSON.stringify(obj));
-});
+router.route('/hello/:name').get(function (req, res) {
+    res.setHeader('Content-Type', 'application/json')
+    res.end(JSON.stringify({ hello: req.params.name }))
+}).all(function (req, res) {
+    res.end();
+})
 
-dispatcher.onError(function (req, res) {
-    res.writeHead(404);
-    res.end("Error, la url no existe!");
-});
-
-server.listen(8080);
+server.listen(8080)
